@@ -21,4 +21,4 @@ Coming Soon
 
 We used a logistic mixed effects model to include the effects of landscape, land-use, and climate variables on the probability of Brook Trout occupancy in stream reaches (confluence to confluence). We included random effects of HUC10 (watershed) to allow for the chance that the probability of occupancy and the effect of covariates were likely to be similar within a watershed. Our fish data came primarily from state and federal agencies (see below). We considered a stream occupied if any Brook Trout were ever caught during an electrofishing survey between 1991 and 2010.
 
-**Project details can be found at: **
+**Project details can be found at: [http://conte-ecology.github.io/Northeast_Bkt_Occupancy/](http://conte-ecology.github.io/Northeast_Bkt_Occupancy/)**
