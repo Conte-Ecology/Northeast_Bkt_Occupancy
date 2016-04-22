@@ -60,6 +60,9 @@ HUC-level temperature not correlated to random intercepts
 
 ```{r fitted AUC}
 pred.fit <- inv.logit(predict(glmm.M32, df.fit, allow.new.levels = TRUE))
+# pred.fit2 <- predict(glmm.M32, df.fit, allow.new.levels = TRUE, type = "response") # identical
+# pred.fit3 <- predict(glmm.M32, df.fit, allow.new.levels = TRUE, type = "response", re.form = NULL) # identical
+# pred.fit4 <- predict(glmm.M32, df.fit, allow.new.levels = FALSE, type = "response", re.form = NULL) # identical
 
 fit.sensitivity <- auc(sensitivity(pred.fit, as.factor(df.fit$pres))) # 0.608
 fit.specificity <- auc(specificity(pred.fit, as.factor(df.fit$pres))) # 0.638

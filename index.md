@@ -184,7 +184,7 @@ Although we compared errors rates over a range of thresholds, there are still di
 Our predictions were on slightly different flowlines and catchment delineations than those used by Downstream Strategies. To make explicit comparision of predictions from the two models, we rasterized the DSS predictions and performed zonal statistics to calculate the area-weighted average in each of our catchments (associated with each stream reach). 
 
 
-![](Project_Webpage_Summary_files/figure-html/dss comparison.png) 
+![](index_files/figure-html/dss comparison.png) 
 
 
 **more comparisons and results coming soon**
