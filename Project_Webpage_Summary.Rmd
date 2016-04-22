@@ -128,7 +128,7 @@ Documentation related to the landscape, land-use, streams, catchment delineation
 
 ### Table of Model Results
 
-Fixed Effects:
+**Fixed Effects:**
 
 ```{r coefficient table, echo=FALSE, warning=FALSE, message=FALSE, results='asis'}
 
@@ -137,7 +137,7 @@ library(data.table) # to convert rownames and column names into a table without 
 mod_sum <- summary(glmm.M32)
 
 summary_fixed <- data.table(mod_sum$coefficients, keep.rownames = TRUE)
-setnames(summary_fixed, "rn", "Parameter")
+setnames(summary_fixed, c("rn", "Pr(>|z|)"), c("Parameter", "P-value"))
 
 pandoc.table(summary_fixed,
              digits = 3,
@@ -147,7 +147,7 @@ pandoc.table(summary_fixed,
 df_fixed <- as.data.frame(summary_fixed)
 ```
 
-Random Effects (HUC10):
+**Random Effects (HUC10):**
 
 ```{r random effects table, echo=FALSE, warning=FALSE, message=FALSE, results='asis'}
 

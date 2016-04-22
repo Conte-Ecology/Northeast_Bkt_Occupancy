@@ -70,25 +70,25 @@ Documentation related to the landscape, land-use, streams, catchment delineation
 
 ### Table of Model Results
 
-Fixed Effects:
+**Fixed Effects:**
 
 
-|       Parameter       |  Estimate  |  Std. Error  |  z value  |  Pr(>|z|)  |
-|:---------------------:|:----------:|:------------:|:---------:|:----------:|
-|      (Intercept)      |   0.314    |     0.11     |   2.84    |  0.00445   |
-|         area          |   -0.416   |    0.0591    |   -7.04   |  1.89e-12  |
-|    summer_prcp_mm     |   0.385    |    0.0978    |   3.94    |  8.14e-05  |
-|     meanJulyTemp      |   -0.706   |    0.0719    |   -9.82   |  9.03e-23  |
-|        forest         |   0.413    |    0.0686    |   6.02    |  1.71e-09  |
-|      surfcoarse       |   0.165    |    0.0586    |   2.81    |  0.00494   |
-|       allonnet        |   -0.291   |    0.0568    |   -5.13   |  2.83e-07  |
-|       devel_hi        |  -0.0996   |    0.0569    |   -1.75   |   0.0799   |
-|      agriculture      |   -0.664   |    0.0995    |   -6.67   |  2.57e-11  |
-|  area:summer_prcp_mm  |   0.0217   |    0.0503    |   0.432   |   0.666    |
-|  meanJulyTemp:forest  |   -0.034   |    0.0501    |  -0.678   |   0.498    |
-| summer_prcp_mm:forest |   0.127    |    0.0585    |   2.17    |   0.0302   |
+|       Parameter       |  Estimate  |  Std. Error  |  z value  |  P-value  |
+|:---------------------:|:----------:|:------------:|:---------:|:---------:|
+|      (Intercept)      |   0.314    |     0.11     |   2.84    |  0.00445  |
+|         area          |   -0.416   |    0.0591    |   -7.04   | 1.89e-12  |
+|    summer_prcp_mm     |   0.385    |    0.0978    |   3.94    | 8.14e-05  |
+|     meanJulyTemp      |   -0.706   |    0.0719    |   -9.82   | 9.03e-23  |
+|        forest         |   0.413    |    0.0686    |   6.02    | 1.71e-09  |
+|      surfcoarse       |   0.165    |    0.0586    |   2.81    |  0.00494  |
+|       allonnet        |   -0.291   |    0.0568    |   -5.13   | 2.83e-07  |
+|       devel_hi        |  -0.0996   |    0.0569    |   -1.75   |  0.0799   |
+|      agriculture      |   -0.664   |    0.0995    |   -6.67   | 2.57e-11  |
+|  area:summer_prcp_mm  |   0.0217   |    0.0503    |   0.432   |   0.666   |
+|  meanJulyTemp:forest  |   -0.034   |    0.0501    |  -0.678   |   0.498   |
+| summer_prcp_mm:forest |   0.127    |    0.0585    |   2.17    |  0.0302   |
 
-Random Effects (HUC10):
+**Random Effects (HUC10):**
 
 
 |   Parameter    |  SD   |  Variance  |
