@@ -35,6 +35,8 @@ conte_preds <- read_csv(file = "Output/sheds_trout_predictions.csv")
 df_valid <- readRDS("Data/valid.RData")
 
 df_pa <- read_csv("Data/regional_occupancy_data.csv")
+df_covariates <- readRDS("Data/covariates.RData") %>%
+  dplyr::select(featureid, forest, AreaSqKM)
 df_locations <- read.csv("Data/locations_clean.csv", header = T, stringsAsFactors = F)
 #foo <- read.csv("Data/locations_clean.csv", header = T, stringsAsFactors = F)
 df_ids <- read.csv("Data/locations_featureids.csv", header = T, stringsAsFactors = F)
@@ -50,10 +52,12 @@ df_locations <- df_locations %>%
 df_pa <- df_pa %>%
   dplyr::left_join(df_ids) %>%
   dplyr::left_join(df_locations) %>%
+  dplyr::select(-AreaSqKM) %>%
+  dplyr::left_join(df_covariates) %>%
   dplyr::mutate(Occupancy = ifelse(catch > 0, 1, catch)) %>%
   dplyr::filter(!is.na(Occupancy),
                 !is.na(AreaSqKM)) %>%
-  dplyr::distinct() %>%
+  #dplyr::distinct() %>%
   dplyr::rename(data_source = source)
 
 # Get data relating featureid to states
@@ -67,15 +71,15 @@ df_states <- dplyr::collect(tbl_states) %>%
 # combine data and summarize
 df_summary <- df_pa %>%
   dplyr::left_join(df_states) %>%
-  dplyr::group_by(state, data_source) %>%
-  dplyr::summarise(#n = n(),
-                   n_reaches = length(unique(featureid)),
+  dplyr::group_by(state) %>% #, data_source) %>%
+  dplyr::summarise(samples = n(),
+                   n_catchments = length(unique(featureid)),
                    #n_occ = sum(Occupancy),
                    min_yr = min(year_min),
                    max_yr = max(year_max)) %>%
   dplyr::mutate(min_yr = ifelse(is.na(min_yr), as.integer(1991), min_yr),
                 max_yr = ifelse(is.na(max_yr), as.integer(2010), max_yr),
-                range_yrs = max_yr - min_yr)
+                range_yrs = max_yr - min_yr + 1)
 
 ```
 
