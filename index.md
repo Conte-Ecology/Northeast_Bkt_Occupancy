@@ -1,82 +1,8 @@
----
-title: "Northeast Brook Trout Occupancy"
-author: "Daniel J Hocking"
-date: "`r format(Sys.time(), '%d %B, %Y')`"
-output: 
-  html_document: 
-    keep_md: yes
----
+# Northeast Brook Trout Occupancy
+Daniel J Hocking  
+`r format(Sys.time(), '%d %B, %Y')`  
 
-```{r setup, echo=FALSE, warning=FALSE, message=FALSE}
-library(pander)
-library(ggplot2)
-library(dplyr)
-library(lme4)
-library(readr)
-library(RPostgreSQL)
-library(boot)
 
-source("~/.Rprofile")
-#library(RPostgreSQL)
-#library(lubridate)
-#library(conteStreamTemperature)
-#library(texreg)
-# library(stargazer)
-#library(tables)
-
-# local_dir <- "Output" 
-# data_dir <- local_dir # paste0(getwd(), local_dir)
-
-#df <- readRDS(file.path(data_dir, "obs_predicted.RData"))
-#df_fit <- readRDS("Data/fit.RData")
-load("Data/fit_data_out.RData")
-conte_preds <- read_csv(file = "Output/sheds_trout_predictions.csv")
-df_valid <- readRDS("Data/valid.RData")
-
-df_pa <- read_csv("Data/regional_occupancy_data.csv")
-df_locations <- read.csv("Data/locations_clean.csv", header = T, stringsAsFactors = F)
-#foo <- read.csv("Data/locations_clean.csv", header = T, stringsAsFactors = F)
-df_ids <- read.csv("Data/locations_featureids.csv", header = T, stringsAsFactors = F)
-
-df_ids <- df_ids %>%
-  dplyr::mutate(featureid = as.integer(gsub(pattern = ",", "", FEATUREID)),
-                id = as.integer(gsub(",", "", id)))
-
-df_locations <- df_locations %>%
-  dplyr::select(-latitude, -longitude)
-  
-# organize presence-absence data
-df_pa <- df_pa %>%
-  dplyr::left_join(df_ids) %>%
-  dplyr::left_join(df_locations) %>%
-  dplyr::mutate(Occupancy = ifelse(catch > 0, 1, catch)) %>%
-  dplyr::filter(!is.na(Occupancy),
-                !is.na(AreaSqKM)) %>%
-  dplyr::distinct() %>%
-  dplyr::rename(data_source = source)
-
-# Get data relating featureid to states
-db <- src_postgres(dbname='sheds_new', host='osensei.cns.umass.edu', port='5432', user=options('SHEDS_USERNAME'), password=options('SHEDS_PASSWORD'))
-
-tbl_states <- tbl(db, 'catchment_state')
-
-df_states <- dplyr::collect(tbl_states) %>%
-  dplyr::rename(state = stusps)
-
-# combine data and summarize
-df_summary <- df_pa %>%
-  dplyr::left_join(df_states) %>%
-  dplyr::group_by(state, data_source) %>%
-  dplyr::summarise(#n = n(),
-                   n_reaches = length(unique(featureid)),
-                   #n_occ = sum(Occupancy),
-                   min_yr = min(year_min),
-                   max_yr = max(year_max)) %>%
-  dplyr::mutate(min_yr = ifelse(is.na(min_yr), as.integer(1991), min_yr),
-                max_yr = ifelse(is.na(max_yr), as.integer(2010), max_yr),
-                range_yrs = max_yr - min_yr)
-
-```
 
 ## Abstract
 
@@ -95,18 +21,30 @@ We used a logistic mixed effects model to include the effects of landscape, land
 
 ## Observed Presence-Absence Data (Dependent Data)
 
-```{r temperature data summary, echo=FALSE, results='asis', message='FALSE', warning='FALSE'}
-# str(tempDataSync)
-# str(tempDataSyncValid)
-#str(df_states)
 
-#dbDisconnect(db$con)
-
-pandoc.table(df_summary,
-             style = "rmarkdown",
-             split.tables = Inf)
-
-```
+|  state  |  data_source  |  n_reaches  |  min_yr  |  max_yr  |  range_yrs  |
+|:-------:|:-------------:|:-----------:|:--------:|:--------:|:-----------:|
+|   CT    |    CTDEEP     |    1259     |   1991   |   2010   |     19      |
+|   MA    |    CTDEEP     |      9      |   1991   |   2010   |     19      |
+|   MA    |     MADFW     |     321     |   1991   |   2010   |     19      |
+|   MA    |     NYDEC     |      4      |   2008   |   2010   |      2      |
+|   ME    |     MEIFW     |    1881     |   1991   |   2010   |     19      |
+|   NH    |    CTDEEP     |      1      |   1991   |   2010   |     19      |
+|   NH    |     MADFW     |      4      |   1991   |   2010   |     19      |
+|   NH    |     MEIFW     |      6      |   1995   |   2010   |     15      |
+|   NH    |     VTFWD     |      1      |   1991   |   2010   |     19      |
+|   NY    |    CTDEEP     |      3      |   1991   |   2010   |     19      |
+|   NY    |     MADFW     |      2      |   2008   |   2010   |      2      |
+|   NY    |     NYDEC     |    1115     |   1991   |   2010   |     19      |
+|   RI    |    CTDEEP     |      2      |   1991   |   2010   |     19      |
+|   VT    |     MADFW     |      1      |   2004   |   2004   |      0      |
+|   VT    |     VTFWD     |     193     |   1991   |   2010   |     19      |
+|   NA    |    CTDEEP     |      8      |   1991   |   2010   |     19      |
+|   NA    |     Hitt      |      7      |   1991   |   2010   |     19      |
+|   NA    |     MEIFW     |      6      |   2007   |   2007   |      0      |
+|   NA    |     NYDEC     |    3246     |   1991   |   2010   |     19      |
+|   NA    |     PFBC      |     858     |   1991   |   2010   |     19      |
+|   NA    |     VTFWD     |     128     |   1991   |   2010   |     19      |
 
 ## Predictor Variables
 
@@ -129,46 +67,32 @@ Mean July Stream Temperature | Estimated stream temperature from the SHEDS regio
 
 **Fixed Effects:**
 
-```{r coefficient table, echo=FALSE, warning=FALSE, message=FALSE, results='asis'}
 
-library(data.table) # to convert rownames and column names into a table without wierd format problems
-
-mod_sum <- summary(glmm.M32)
-
-summary_fixed <- data.table(mod_sum$coefficients, keep.rownames = TRUE)
-setnames(summary_fixed, c("rn", "Pr(>|z|)"), c("Parameter", "P-value"))
-
-pandoc.table(summary_fixed,
-             digits = 3,
-             style = "rmarkdown",
-             split.tables = 300)
-
-df_fixed <- as.data.frame(summary_fixed)
-```
+|       Parameter       |  Estimate  |  Std. Error  |  z value  |  P-value  |
+|:---------------------:|:----------:|:------------:|:---------:|:---------:|
+|      (Intercept)      |   0.314    |     0.11     |   2.84    |  0.00445  |
+|         area          |   -0.416   |    0.0591    |   -7.04   | 1.89e-12  |
+|    summer_prcp_mm     |   0.385    |    0.0978    |   3.94    | 8.14e-05  |
+|     meanJulyTemp      |   -0.706   |    0.0719    |   -9.82   | 9.03e-23  |
+|        forest         |   0.413    |    0.0686    |   6.02    | 1.71e-09  |
+|      surfcoarse       |   0.165    |    0.0586    |   2.81    |  0.00494  |
+|       allonnet        |   -0.291   |    0.0568    |   -5.13   | 2.83e-07  |
+|       devel_hi        |  -0.0996   |    0.0569    |   -1.75   |  0.0799   |
+|      agriculture      |   -0.664   |    0.0995    |   -6.67   | 2.57e-11  |
+|  area:summer_prcp_mm  |   0.0217   |    0.0503    |   0.432   |   0.666   |
+|  meanJulyTemp:forest  |   -0.034   |    0.0501    |  -0.678   |   0.498   |
+| summer_prcp_mm:forest |   0.127    |    0.0585    |   2.17    |  0.0302   |
 
 **Random Effects (HUC10):**
 
-```{r random effects table, echo=FALSE, warning=FALSE, message=FALSE, results='asis'}
 
-results_rand <- ranef(glmm.M32)$fhuc10
-results_rand <- data.table(t(dplyr::summarise_each(results_rand, funs(sd))), keep.rownames = TRUE)
-results_rand$var <- results_rand$V1^2
-setnames(results_rand, c("rn", "V1", "var"), c("Parameter", "SD", "Variance"))
-
-pandoc.table(results_rand,
-             digits = 3,
-             style = "rmarkdown",
-             split.tables = 300)
-
-# library(stargazer)
-# stargazer(glmm.M32, 
-#           type = "html", 
-#           single.row = TRUE,
-#           dep.var.labels   = "Prob. Occ (SE)",
-#           intercept.bottom = FALSE, 
-#           align = TRUE)
-
-```
+|   Parameter    |  SD   |  Variance  |
+|:--------------:|:-----:|:----------:|
+|  (Intercept)   | 1.34  |    1.79    |
+|      area      | 0.211 |   0.0443   |
+|  agriculture   | 0.353 |   0.124    |
+| summer_prcp_mm | 0.534 |   0.285    |
+|  meanJulyTemp  | 0.235 |   0.0553   |
 
 These results indicate that mean July stream temperature had the largest (negative) effect on the probability of Brook Trout occupancy. Forest cover within the 200 foot riparian buffer had a strong positive effect on occupancy, whereas agriculture within the entire upstream drainage had a negative effect on occupancy. Mean summer precipitation has a positive effect on occupancy and the effect was larger with increasing levels of riparian forest cover, but was not dependent on stream drainage area. The total impounded area on the stream network had a negative effect on Brook Trout occupancy as did the upstream drainage area. Surficial coarseness was positively correlated with the presence of Brook Trout, which may be a result of better physical habitat structure or as an indication of local groundwater upwelling.
 
@@ -176,7 +100,7 @@ These results indicate that mean July stream temperature had the largest (negati
 
 ![Effect of riparian forest cover on Brook Trout Occupancy](Output/Forest_Effects.png)
 
-The average occupancy across the range of observed catchments was `r round(plogis(df_fixed[which(df_fixed$Parameter == "(Intercept)"), "Estimate"]), 2)`.
+The average occupancy across the range of observed catchments was 0.58.
 
 The effects of these landscape and climate characteristics are similar to what has been observed in other Brook Trout studies.
 
@@ -204,7 +128,7 @@ Our model is a good fit (AUC = 0.95) to the data and has a very strong ability t
 
 ### Model Validation
 
-More important than how well the model works with the data used to fit the model is the ability of the model to predict occupancy at unsurveyed locations. To assess this predictive power, we used data from the `r length(unique(df_valid$featureid))` stream reaches withheld from model fitting. We use the term "fitted data" to refer to the data we used to fit (estimate) the model. For comparison, others use the terms "training data" or "calibration data" synonymously. Validation data are the independent data withheld from model fitting for the purpose of understanding how well a model predicts to unobserved space and time. To evaluate this predictive power, we plotted the false positive rate (1-specificity) vs. the true positive rate (sensitivity) and calculated the AUC.
+More important than how well the model works with the data used to fit the model is the ability of the model to predict occupancy at unsurveyed locations. To assess this predictive power, we used data from the 1933 stream reaches withheld from model fitting. We use the term "fitted data" to refer to the data we used to fit (estimate) the model. For comparison, others use the terms "training data" or "calibration data" synonymously. Validation data are the independent data withheld from model fitting for the purpose of understanding how well a model predicts to unobserved space and time. To evaluate this predictive power, we plotted the false positive rate (1-specificity) vs. the true positive rate (sensitivity) and calculated the AUC.
 
 ![Model predictive discrimination ability using validation data](Output/AUC_valid_plots.png)
 
@@ -218,54 +142,38 @@ We provide estimates of the probability of occupancy for each catchment with inc
 
 DeWeber and Wagner (2014) used a similar model to predict Brook Trout occupancy throughout the native eastern range. Downstream Stategies (DSS) also modeled the probability of Brook Trout occupancy for the Chesapeake Bay watershed. DSS used a different approach, employing boosted regression trees to fit the presence-absence data. This is a machine learning method that allows for non-parametric correlations between dependent (predictor) and independent (response) variables. We present a comparison of the error rates reported for each group over a range of occupancy thresholds. Information about the False Negative Rates (FNR) and False Positive Rates (FPR) along with ROC AUC can be found above.
 
-```{r error rate comparisons, echo=FALSE, warning=FALSE, message=FALSE, results='asis'}
-valid.rates <- readRDS(file = "Output/validation_error_table.rds")
 
-pandoc.table(valid.rates,
-             digits = 3,
-            keep.trailing.zeros = TRUE,
-             style = "rmarkdown",
-             split.tables = 300)
+|     justification      |  thresholds  |  sensitivity  |  specificity  |  FNR  |  FPR  |  total_error_rate  |
+|:----------------------:|:------------:|:-------------:|:-------------:|:-----:|:-----:|:------------------:|
+|       FNR = 10%        |     0.23     |     0.90      |     0.33      | 0.10  | 0.67  |        0.77        |
+|     Compare w/DSS      |     0.40     |     0.79      |     0.53      | 0.21  | 0.47  |        0.68        |
+|   Compare w/DeWeber    |     0.46     |     0.76      |     0.59      | 0.24  | 0.41  |        0.65        |
+|   Equal error rates    |     0.56     |     0.68      |     0.68      | 0.32  | 0.32  |        0.64        |
+| Fitted data prevalence |     0.61     |     0.64      |     0.73      | 0.36  | 0.27  |        0.63        |
+|       FPR = 10%        |     0.77     |     0.43      |     0.90      | 0.57  | 0.10  |        0.67        |
 
-compare.rates <- valid.rates %>%
-  dplyr::ungroup() %>%
-  dplyr::select(Threshold = thresholds, Conte_FNR = FNR, Conte_FPR = FPR) %>%
-  dplyr::mutate(DSS_FNR = c(NA_real_, 0.09, NA, NA, NA, NA),
-                DSS_FPR = c(NA_real_, 0.10, NA, NA, NA, NA),
-                DeWeber_FNR = c(NA_real_, NA, 0.34, NA, NA, NA),
-                DeWeber_FPR = c(NA_real_, NA, 0.22, NA, NA, NA))
 
-pandoc.table(compare.rates,
-             digits = 3,
-            keep.trailing.zeros = TRUE,
-             style = "rmarkdown",
-             split.tables = 300)
-```
+
+|  Threshold  |  Conte_FNR  |  Conte_FPR  |  DSS_FNR  |  DSS_FPR  |  DeWeber_FNR  |  DeWeber_FPR  |
+|:-----------:|:-----------:|:-----------:|:---------:|:---------:|:-------------:|:-------------:|
+|    0.23     |    0.10     |    0.67     |    NA     |    NA     |      NA       |      NA       |
+|    0.40     |    0.21     |    0.47     |   0.09    |    0.1    |      NA       |      NA       |
+|    0.46     |    0.24     |    0.41     |    NA     |    NA     |     0.34      |     0.22      |
+|    0.56     |    0.32     |    0.32     |    NA     |    NA     |      NA       |      NA       |
+|    0.61     |    0.36     |    0.27     |    NA     |    NA     |      NA       |      NA       |
+|    0.77     |    0.57     |    0.10     |    NA     |    NA     |      NA       |      NA       |
 
 The least biased comparison is when holding one of the error rates constant (e.g. 10%) and calculating the other error rate. The threshold for this will differ for each data set and model but is roughly comparable.
 
-```{r constant error rate comparison, echo=FALSE, warning=FALSE, message=FALSE, results='asis'}
-valid.rates <- readRDS(file = "Output/validation_error_table.rds")
 
-compare.rates <- valid.rates %>%
-  dplyr::ungroup() %>%
-  dplyr::select(Threshold = thresholds, Conte_FNR = FNR, Conte_FPR = FPR) %>%
-  dplyr::mutate(DSS_FNR = c(NA_real_, 0.09, NA, NA, NA, NA),
-                DSS_FPR = c(NA_real_, 0.10, NA, NA, NA, NA),
-                DeWeber_FNR = c(NA_real_, NA, 0.34, NA, NA, NA),
-                DeWeber_FPR = c(NA_real_, NA, 0.22, NA, NA, NA))
-
-rates.10 <- data.frame(Group = c("Conte", "DeWeber", "DSS", "Conte", "DeWeber", "DSS"),
-           FNR = c(0.10, 0.10, 0.10, 0.57, 0.58, 0.09),
-           FPR = c(0.67, 0.50, 0.09, 0.10, 0.10, 0.10))
-
-pandoc.table(rates.10,
-             digits = 3,
-            keep.trailing.zeros = TRUE,
-             style = "rmarkdown",
-             split.tables = 300)
-
-```
+|  Group  |  FNR  |  FPR  |
+|:-------:|:-----:|:-----:|
+|  Conte  |  0.1  | 0.67  |
+| DeWeber |  0.1  |  0.5  |
+|   DSS   |  0.1  | 0.09  |
+|  Conte  | 0.57  |  0.1  |
+| DeWeber | 0.58  |  0.1  |
+|   DSS   | 0.09  |  0.1  |
 
 Although we compared errors rates over a range of thresholds, there are still differences in the interpretation of error rates among studies. We used similar methods and data as DeWeber and Wagner (2014) and the error rates should be closely comparable, especially the comparison of error rates when using the observed prevalence to establish the thresholds (cutoffs). DSS used very different data sources and different methods making even their predictive performance less comparable. For example, they included rivers up to 17,000 $km^2$, whereas we limited our analysis to streams < 200 $km^2$ and only used streams where surveys were done targeting trout using electrofishing methods. Larger rivers in this region have virtually zero probability of wild Brook Trout occupancy. Therefore, including these rivers, which are nearly all 0, makes for easier prediction and inflates the model performance in relation to more restrictive models such as ours. Neither method is right or wrong, but rather provide slightly different inference. Our model focuses on distinguishing the probability of occurrence for headwater streams potentially suitable for wild trout populations throughout the northeast U.S. The DSS analysis provides a broader overview of streams and rivers likely to support Brook Trout across all flowing waters in the Chesapeake Bay Watershed. Even accounting for those differences, the high accuracy and balance of false positives and negatives suggests that the DSS model likely produces more consistently accurate predictions of Brook Trout occurrence within the Chesapeake Bay Watershed compared with either of the larger regional models.
 
@@ -274,35 +182,7 @@ Although we compared errors rates over a range of thresholds, there are still di
 Our predictions were on slightly different flowlines and catchment delineations than those used by Downstream Strategies. To make explicit comparision of predictions from the two models, we rasterized the DSS predictions and performed zonal statistics to calculate the area-weighted average in each of our catchments (associated with each stream reach). 
 
 
-```{r dss comparison, echo=FALSE, warning=FALSE, message=FALSE, results='asis'}
-# import downstream strategies predictions
-dss_preds <- read_csv("Data/hrd_final_preds.csv")
-dss_preds <- dss_preds %>%
-  dplyr::mutate(featureid = as.integer(gsub(",", "", FEATUREID))) %>%
-  dplyr::rename(dss_pred = final_preds)
-
-# combine fitted and validation data and do predictions
-# conte_preds <- dplyr::bind_rows(df.fit, df.valid) %>%
-#   dplyr::mutate(featureid = as.integer(featureid))
-# conte_preds$conte_pred <- inv.logit(predict(glmm.M32, conte_preds, allow.new.levels = TRUE))
-
-# join with our predictions
-df_preds <- dplyr::left_join(dss_preds, conte_preds) %>%
-  dplyr::rename(conte_pred = current)
-
-g <- ggplot(df_preds, aes(conte_pred, dss_pred)) + geom_point(alpha = 0.02, colour = "gray20") + geom_abline(intercept = 0, slope = 1, colour = "red") + theme_bw()
-g + geom_density2d()
-
-#g + stat_density2d(aes(fill = ..level..), geom = "polygon")
-
-#g + stat_density2d(geom = "tile", aes(fill = ..density..), contour = FALSE)
-
-#g + stat_binhex()
-
-#cor(df_preds$dss_pred, df_preds$conte_pred, use = "pairwise.complete.obs")
-
-
-```
+![](index_files/figure-html/dss comparison-1.png)<!-- -->
 
 
 
