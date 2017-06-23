@@ -5,6 +5,7 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
   html_document: 
     keep_md: yes
+    template: sheds-template.html
 ---
 
 ```{r setup, echo=FALSE, warning=FALSE, message=FALSE}
@@ -60,7 +61,7 @@ db <- src_postgres(dbname='sheds_new', host='osensei.cns.umass.edu', port='5432'
 
 tbl_states <- tbl(db, 'catchment_state')
 
-df_states <- dplyr::collect(tbl_states) %>%
+df_states <- dplyr::collect(tbl_states, n = Inf) %>%
   dplyr::rename(state = stusps)
 
 # combine data and summarize
