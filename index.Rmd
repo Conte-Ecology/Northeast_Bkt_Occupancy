@@ -110,13 +110,14 @@ pandoc.table(df_summary,
 
 ## Predictor Variables
 
-Documentation related to the landscape, land-use, streams, catchment delineation, and climate variable data sources and processing can be found at [http://conte-ecology.github.io/shedsGisData/](http://conte-ecology.github.io/shedsGisData/).
+Documentation related to the landscape, land-use, streams, catchment delineation, and climate variable data sources and processing can be found at [http://conte-ecology.github.io/shedsGisData/](http://conte-ecology.github.io/shedsGisData/). We used an AICc model selection approach to find the best combination of variables balancing model fit with model complexity. The model set was based on the literature and author experience and followed closely with [Kanno et al. 2015](http://afs.tandfonline.com/doi/abs/10.1080/00028487.2014.991446).
 
 | Variable | Description | Source | Processing | GitHub Repository |
 |:--------:| --------------------------- | --------------- | ------------------------- | ----------------- |
 | Total Drainage Area | The total contributing drainage area from the entire upstream network | [The SHEDS Data project](http://conte-ecology.github.io/shedsGisData/) | The individual polygon areas are summed for all of the catchments in the contributing network| [NHDHRDV2](https://github.com/Conte-Ecology/shedsGisData/tree/master/NHDHRDV2) |
 | Riparian Forest Cover | The percentage of the upstream 200ft riparian buffer area that is covered by trees taller than 5 meters | [The National LandCover Database (NLCD)](http://www.mrlc.gov/nlcd06_data.php) | All of the NLCD forest type classifications are combined and attributed to each riparian buffer polygon  using GIS tools. All upstream polygon values are then aggregated.| [nlcdLandCover](https://github.com/Conte-Ecology/shedsGisData/tree/master/basinCharacteristics/rasterPrep/nlcdLandCover) |
-| Daily Precipition | The daily precipitation record for the individual local catchment | [Daymet Daily Surface Weather and Climatological Summaries](https://daymet.ornl.gov/) | Daily precipitation records are spatially assigned to each catchment based on overlapping grid cells using the [zonalDaymet](https://github.com/Conte-Ecology/zonalDaymet) R package| [daymet](https://github.com/Conte-Ecology/shedsGisData/tree/master/daymet) |
+| Precipition | The mean of the summer daily precipitation for the individual local catchment | [Daymet Daily Surface Weather and Climatological Summaries](https://daymet.ornl.gov/) | Daily precipitation records are spatially assigned to each catchment based on overlapping grid cells using the [zonalDaymet](https://github.com/Conte-Ecology/zonalDaymet) R package| [daymet](https://github.com/Conte-Ecology/shedsGisData/tree/master/daymet) |
+Mean July Stream Temperature | Estimated stream temperature from the SHEDS regional model |	SHEDS stream temperature model | Daily stream temperature estimates were aggregated to a mean July value for each catchment |	conteStreamTemperature_northeast
 | Upstream Impounded Area| The total area in the contributing drainage basin that is covered by wetlands, lakes, or ponds that intersect the stream network | [U.S. Fish & Wildlife Service (FWS) National Wetlands Inventory](http://www.fws.gov/wetlands/Data/Data-Download.html)| All freshwater surface water bodies are attributed to each catchment using GIS tools. All upstream polygon values are then aggregated.| [fwsWetlands](https://github.com/Conte-Ecology/shedsGisData/tree/master/basinCharacteristics/rasterPrep/fwsWetlands) |
 | Percent Agriculture | The percentage of the contributing drainage area that is covered by agricultural land (e.g. cultivated crops, orchards, and pasture) including fallow land. | [The National LandCover Database](http://www.mrlc.gov/nlcd06_data.php)| All of the NLCD agricutlural classifications are combined and attributed to each catchment polygon using GIS tools. All upstream polygon values are then aggregated.| [nlcdLandCover](https://github.com/Conte-Ecology/shedsGisData/tree/master/basinCharacteristics/rasterPrep/nlcdLandCover) |
 | Percent High Intensity Developed | The percentage of the contributing drainage area covered by places where people work or live in high numbers (typically defined as areas  covered by more than 80% impervious surface) | [The National LandCover Database](http://www.mrlc.gov/nlcd06_data.php)| The NLCD high intensity developed classification is attributed to each catchment polygon using GIS tools. All upstream polygon values are then aggregated. | [nlcdLandCover](https://github.com/Conte-Ecology/shedsGisData/tree/master/basinCharacteristics/rasterPrep/nlcdLandCover) |
@@ -169,7 +170,7 @@ pandoc.table(results_rand,
 
 ```
 
-These results indicate that mean July stream temperature had the largest (negative) effect on the probability of Brook Trout occupancy. Forest cover within the 200 foot riparian buffer had a strong positive effect on occupancy, whereas agriculture within the entire upstream drainage had a negative effect on occupancy. Mean summer precipitation has a positive effect on occupancy and the effect was larger with increasing levels of riparian forest cover, but was not dependent on stream drainage area. The total impounded area on the stream network (allonnet) had a negative effect on Brook Trout occupancy as did the upstream drainage area. Surficial coarseness was positively correlated with the presence of Brook Trout, which may be a result of better physical habitat structure or as an indication of local groundwater upwelling.
+These results indicate that mean July stream temperature had the largest (negative) effect on the probability of Brook Trout occupancy. Forest cover within the 200 foot riparian buffer had a strong positive effect on occupancy, whereas agriculture within the entire upstream drainage had a negative effect on occupancy. Mean summer precipitation has a positive effect on occupancy and the effect was larger with increasing levels of riparian forest cover, but was not dependent on stream drainage area. The total impounded area on the stream network had a negative effect on Brook Trout occupancy as did the upstream drainage area. Surficial coarseness was positively correlated with the presence of Brook Trout, which may be a result of better physical habitat structure or as an indication of local groundwater upwelling.
 
 ![Effect of mean July stream temperature on Brook Trout Occupancy](Output/July_Temp_Effect.png)
 
@@ -177,7 +178,7 @@ These results indicate that mean July stream temperature had the largest (negati
 
 The average occupancy across the range of observed catchments was `r round(plogis(df_fixed[which(df_fixed$Parameter == "(Intercept)"), "Estimate"]), 2)`.
 
-The effects of these landscape and climate characteristics are similar to what has been observed in other Brook Trout studies. (**More detailed comparison with Downstream Strategies and DeWeber and Wager (2014) coming soon**)
+The effects of these landscape and climate characteristics are similar to what has been observed in other Brook Trout studies.
 
 ### Model Fit
 
@@ -193,13 +194,13 @@ We examined the false positive and false negative rates and used the Area Under 
 * Accuracy - ability to identify true positives and true negatives
 * ROC - The curve is created by plotting the true positive rate (sensitivity) against the false positive rate (1-specificity) at various threshold settings
 
-The model output (predictions) are the probability of occupancy but the data are observed presence and absence (1 or 0). Therefore, it is difficult to evaluate how well the model predicts the data. The probabilities of occupancy must be coverted to presence-absences for comparison. We do this over a range of thresholds (= cutoffs). The threshold is the probability above which the stream is assumed to be occupied (Brook Trout = present). For example, if the probability of occupancy for a stream is 0.45 and we set a threshold = 0.50, we would assign the stream as unoccupied (absent). However, if we used a threshold of 0.4 then this same stream would be assigned as occupied (present). If the true (observed) state of the stream was occupied, then using a threshold of 0.5 would result in a false absence (predicted absent when really present) but if we used a threshold of 0.4 we would correct assign the stream as occupied (true positive). Assigning a threshold is a balance of trade-offs between false positives and false negatives. The balance is based on the risk tolerance to the consequences of type I and type II errors.
+The model output (predictions) are the probability of occupancy but the data are observed presence and absence (1 or 0). Therefore, it is difficult to evaluate how well the model predicts the data. The probabilities of occupancy must be converted to presence-absences for comparison. We do this over a range of thresholds (= cutoffs). The threshold is the probability above which the stream is assumed to be occupied (Brook Trout = present). For example, if the probability of occupancy for a stream is 0.45 and we set a threshold = 0.50, we would assign the stream as unoccupied (absent). However, if we used a threshold of 0.4 then this same stream would be assigned as occupied (present). If the true (observed) state of the stream was occupied, then using a threshold of 0.5 would result in a false absence (predicted absent when really present) but if we used a threshold of 0.4 we would correct assign the stream as occupied (true positive). Assigning a threshold is a balance of trade-offs between false positives and false negatives. The balance is based on the risk tolerance to the consequences of type I and type II errors.
 
 AUC can range from 0-1. An AUC value of 0.5 indicates the model does no better than random chance in discriminating occupancy. Models with AUC >0.7 are considered to have good discrimination in assessing the probability of occupancy.
 
 ![Model fit and discrimination ability](Output/AUC_plots.png)
 
-Our model is a good fit to the data and has a very strong ability to assess the probability of occupancy.
+Our model is a good fit (AUC = 0.95) to the data and has a very strong ability to assess the probability of occupancy.
 
 ### Model Validation
 
@@ -209,10 +210,13 @@ More important than how well the model works with the data used to fit the model
 
 The AUC when predicting for the validation data was 0.75, which indicates that the model has good ability to discriminated between occupied and unoccupied stream reaches (catchments) for locations without survey data. From this we are highly confident in the model's ability to predict occupancy across the region.
 
+## Future conditions
+
+We provide estimates of the probability of occupancy for each catchment with increases in stream temperature of either 2 or 4 C. To provide these estimates, we simply increased input values for mean July stream temperature by 2 or 4 C and estimated occupancies. Maps of current and predicted future occupancies are available at ice.ecosheds.org. 
 
 ## Comparison with Other Models
 
-DeWeber and Wagner (2014) used a similar model to predict Brook Trout occupancy throughout the native eastern range. Downstream Stategies (DSS) also modeled the probability of Brook Trout occupancy for the Chesapeake Bay watershed. DSS used a different approach, employing boosted regression trees to fit the presence-absence data. This is a machine learning method that allows for non-parametric correlations between dependent (predictor) and independent (response) variables. We present a comparison of the error rates reported for each group over a range of occupancy thresholds.
+DeWeber and Wagner (2014) used a similar model to predict Brook Trout occupancy throughout the native eastern range. Downstream Stategies (DSS) also modeled the probability of Brook Trout occupancy for the Chesapeake Bay watershed. DSS used a different approach, employing boosted regression trees to fit the presence-absence data. This is a machine learning method that allows for non-parametric correlations between dependent (predictor) and independent (response) variables. We present a comparison of the error rates reported for each group over a range of occupancy thresholds. Information about the False Negative Rates (FNR) and False Positive Rates (FPR) along with ROC AUC can be found above.
 
 ```{r error rate comparisons, echo=FALSE, warning=FALSE, message=FALSE, results='asis'}
 valid.rates <- readRDS(file = "Output/validation_error_table.rds")
@@ -301,6 +305,5 @@ g + geom_density2d()
 ```
 
 
-**more comparisons and results coming soon**
 
 
