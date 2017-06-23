@@ -6,7 +6,7 @@
   <meta name="generator" content="pandoc" />
   <title></title>
   <style type="text/css">code{white-space: pre;}</style>
-  <link rel="stylesheet" href="sheds-styles.css" type="text/css" />
+  <link rel="stylesheet" href="stylesheets/sheds-styles.css" type="text/css" />
 </head>
 <body>
 <h1 id="northeast-brook-trout-occupancy">Northeast Brook Trout Occupancy</h1>
@@ -262,7 +262,7 @@
 </tr>
 <tr class="even">
 <td align="center">Percent Agriculture</td>
-<td>The percentage of the contributing drainage area that is covered by agricultural land (e.g. cultivated crops, orchards, and pasture) including fallow land.</td>
+<td>The percentage of the contributing drainage area that is covered by agricultural land (e.g. cultivated crops, orchards, and pasture) including fallow land.</td>
 <td><a href="http://www.mrlc.gov/nlcd06_data.php">The National LandCover Database</a></td>
 <td>All of the NLCD agricutlural classifications are combined and attributed to each catchment polygon using GIS tools. All upstream polygon values are then aggregated.</td>
 <td><a href="https://github.com/Conte-Ecology/shedsGisData/tree/master/basinCharacteristics/rasterPrep/nlcdLandCover">nlcdLandCover</a></td>
@@ -428,11 +428,11 @@
 <p>We examined the false positive and false negative rates and used the Area Under the Receiver Operating Characteristic ROC) curve (AUC) to assess the model fit.</p>
 <p><u>Definitions</u></p>
 <ul>
-<li>AUC - measures a model’s ability to determine which locations are occupied (Zipkin et al. (2012) <em>Ecological Applications</em>)</li>
-<li>Sensitivity - true positive rate (=“recall rate”)</li>
+<li>AUC - measures a model's ability to determine which locations are occupied (Zipkin et al. (2012) <em>Ecological Applications</em>)</li>
+<li>Sensitivity - true positive rate (=&quot;recall rate&quot;)</li>
 <li>Specificity - true negative rate</li>
-<li>1-Specificity - false positive rate (Type I Error rate; =“fall-out rate”)</li>
-<li>1-Sensitivity - false negative rate (Type II Error rate; =“miss rate”)</li>
+<li>1-Specificity - false positive rate (Type I Error rate; =&quot;fall-out rate&quot;)</li>
+<li>1-Sensitivity - false negative rate (Type II Error rate; =&quot;miss rate&quot;)</li>
 <li>Accuracy - ability to identify true positives and true negatives</li>
 <li>ROC - The curve is created by plotting the true positive rate (sensitivity) against the false positive rate (1-specificity) at various threshold settings</li>
 </ul>
@@ -444,12 +444,12 @@
 </div>
 <p>Our model is a good fit (AUC = 0.95) to the data and has a very strong ability to assess the probability of occupancy.</p>
 <h3 id="model-validation">Model Validation</h3>
-<p>More important than how well the model works with the data used to fit the model is the ability of the model to predict occupancy at unsurveyed locations. To assess this predictive power, we used data from the 1933 stream reaches withheld from model fitting. We use the term “fitted data” to refer to the data we used to fit (estimate) the model. For comparison, others use the terms “training data” or “calibration data” synonymously. Validation data are the independent data withheld from model fitting for the purpose of understanding how well a model predicts to unobserved space and time. To evaluate this predictive power, we plotted the false positive rate (1-specificity) vs. the true positive rate (sensitivity) and calculated the AUC.</p>
+<p>More important than how well the model works with the data used to fit the model is the ability of the model to predict occupancy at unsurveyed locations. To assess this predictive power, we used data from the 1933 stream reaches withheld from model fitting. We use the term &quot;fitted data&quot; to refer to the data we used to fit (estimate) the model. For comparison, others use the terms &quot;training data&quot; or &quot;calibration data&quot; synonymously. Validation data are the independent data withheld from model fitting for the purpose of understanding how well a model predicts to unobserved space and time. To evaluate this predictive power, we plotted the false positive rate (1-specificity) vs. the true positive rate (sensitivity) and calculated the AUC.</p>
 <div class="figure">
 <img src="Output/AUC_valid_plots.png" alt="Model predictive discrimination ability using validation data" />
 <p class="caption">Model predictive discrimination ability using validation data</p>
 </div>
-<p>The AUC when predicting for the validation data was 0.75, which indicates that the model has good ability to discriminated between occupied and unoccupied stream reaches (catchments) for locations without survey data. From this we are highly confident in the model’s ability to predict occupancy across the region.</p>
+<p>The AUC when predicting for the validation data was 0.75, which indicates that the model has good ability to discriminated between occupied and unoccupied stream reaches (catchments) for locations without survey data. From this we are highly confident in the model's ability to predict occupancy across the region.</p>
 <h2 id="future-conditions">Future conditions</h2>
 <p>We provide estimates of the probability of occupancy for each catchment with increases in stream temperature of either 2 or 4 C. To provide these estimates, we simply increased input values for mean July stream temperature by 2 or 4 C and estimated occupancies. Maps of current and predicted future occupancies are available at ice.ecosheds.org.</p>
 <h2 id="comparison-with-other-models">Comparison with Other Models</h2>
@@ -592,7 +592,7 @@
 </tr>
 </tbody>
 </table>
-<p>The least biased comparison is when holding one of the error rates constant (e.g. 10%) and calculating the other error rate. The threshold for this will differ for each data set and model but is roughly comparable.</p>
+<p>The least biased comparison is when holding one of the error rates constant (e.g. 10%) and calculating the other error rate. The threshold for this will differ for each data set and model but is roughly comparable.</p>
 <table>
 <thead>
 <tr class="header">
