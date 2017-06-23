@@ -6,11 +6,11 @@ Modeling_Discussion.md
 *.csv
 *.xls*
 *.pdf
-*.png
+# *.png
 *.eps
 *.jpg
 *.jpeg
-*.html
+# *.html
 *.Rhistory
 .Rhistory
 maps/
