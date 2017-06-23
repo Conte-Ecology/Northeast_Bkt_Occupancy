@@ -24,33 +24,22 @@ We used a logistic mixed effects model to include the effects of landscape, land
 ## Observed Presence-Absense Data (Dependent Data)
 
 
-|  state  |  data_source  |  n_reaches  |  min_yr  |  max_yr  |  range_yrs  |
-|:-------:|:-------------:|:-----------:|:--------:|:--------:|:-----------:|
-|   CT    |    CTDEEP     |    1267     |   1991   |   2010   |     19      |
-|   CT    |     NYDEC     |      2      |   1991   |   2010   |     19      |
-|   MA    |    CTDEEP     |      9      |   1991   |   2010   |     19      |
-|   MA    |     MADFW     |     321     |   1991   |   2010   |     19      |
-|   MA    |     NYDEC     |      4      |   2008   |   2010   |      2      |
-|   MD    |     Hitt      |      2      |   1991   |   2010   |     19      |
-|   MD    |     PFBC      |      1      |   1991   |   2010   |     19      |
-|   ME    |     MEIFW     |    1881     |   1991   |   2010   |     19      |
-|   NH    |    CTDEEP     |      1      |   1991   |   2010   |     19      |
-|   NH    |     MADFW     |      4      |   1991   |   2010   |     19      |
-|   NH    |     MEIFW     |      6      |   1995   |   2010   |     15      |
-|   NH    |     VTFWD     |      1      |   1991   |   2010   |     19      |
-|   NJ    |     NYDEC     |      2      |   1992   |   1994   |      2      |
-|   NY    |    CTDEEP     |      3      |   1991   |   2010   |     19      |
-|   NY    |     MADFW     |      2      |   2008   |   2010   |      2      |
-|   NY    |     NYDEC     |    4350     |   1991   |   2010   |     19      |
-|   PA    |     Hitt      |      5      |   1999   |   2005   |      6      |
-|   PA    |     NYDEC     |      6      |   1991   |   2010   |     19      |
-|   PA    |     PFBC      |     857     |   1991   |   2010   |     19      |
-|   RI    |    CTDEEP     |      2      |   1991   |   2010   |     19      |
-|   VT    |     MADFW     |      1      |   2004   |   2004   |      0      |
-|   VT    |     NYDEC     |      1      |   1995   |   1995   |      0      |
-|   VT    |     VTFWD     |     319     |   1991   |   2010   |     19      |
-|   NA    |     MEIFW     |      6      |   2007   |   2007   |      0      |
-|   NA    |     VTFWD     |      2      |   2006   |   2009   |      3      |
+|  state  |  samples  |  n_catchments  |  min_yr  |  max_yr  |  range_yrs  |
+|:-------:|:---------:|:--------------:|:--------:|:--------:|:-----------:|
+|   CT    |   1535    |      1268      |   1991   |   2010   |     20      |
+|   DE    |     1     |       1        |   1991   |   2010   |     20      |
+|   MA    |    630    |      608       |   1991   |   2010   |     20      |
+|   MD    |    225    |      224       |   1991   |   2010   |     20      |
+|   ME    |   2167    |      1875      |   1991   |   2010   |     20      |
+|   NH    |    12     |       12       |   1991   |   2010   |     20      |
+|   NJ    |     9     |       9        |   1991   |   2010   |     20      |
+|   NY    |   6461    |      4355      |   1991   |   2010   |     20      |
+|   PA    |   3850    |      3804      |   1991   |   2010   |     20      |
+|   RI    |     4     |       3        |   1991   |   2010   |     20      |
+|   VA    |    422    |      422       |   1991   |   2010   |     20      |
+|   VT    |    457    |      320       |   1991   |   2010   |     20      |
+|   WV    |    233    |      233       |   1991   |   2010   |     20      |
+|   NA    |     8     |       8        |   2006   |   2009   |      4      |
 
 ## Predictor Variables
 
@@ -184,7 +173,7 @@ Although we compared errors rates over a range of thresholds, there are still di
 Our predictions were on slightly different flowlines and catchment delineations than those used by Downstream Strategies. To make explicit comparision of predictions from the two models, we rasterized the DSS predictions and performed zonal statistics to calculate the area-weighted average in each of our catchments (associated with each stream reach). 
 
 
-![](index_files/figure-html/dss comparison.png) 
+![](index_files/figure-html/dss comparison-1.png)<!-- -->
 
 
 **more comparisons and results coming soon**

@@ -100,7 +100,7 @@ Coming Soon
 We used a logistic mixed effects model to include the effects of landscape, land-use, and climate variables on the probability of Brook Trout occupancy in stream reaches (confluence to confluence). We included random effects of HUC10 (watershed) to allow for the chance that the probability of occupancy and the effect of covariates were likely to be similar within a watershed. Our fish data came primarily from state and federal agencies (see below). We considered a stream occupied if any Brook Trout were ever caught during an electrofishing survey between 1991 and 2010.
 
 
-## Observed Presence-Absense Data (Dependent Data)
+## Observed Presence-Absence Data (Dependent Data)
 
 ```{r temperature data summary, echo=FALSE, results='asis', message='FALSE', warning='FALSE'}
 # str(tempDataSync)
@@ -274,7 +274,7 @@ Although we compared errors rates over a range of thresholds, there are still di
 
 ### Direct Comparison
 
-Our predictions were on slightly different flowlines and catchment delineations than those used by Downstream Strategies. To make explicit comparision of predictions from the two models, we rasterized the DSS predictions and performed zonal statistics to calculate the area-weighted average in each of our catchments (associated with each stream reach). 
+Our predictions were on slightly different flowlines and catchment delineations than those used by Downstream Strategies. To make explicit comparison of predictions from the two models, we rasterized the DSS predictions and performed zonal statistics to calculate the area-weighted average in each of our catchments (associated with each stream reach). 
 
 
 ```{r dss comparison, echo=FALSE, warning=FALSE, message=FALSE, results='asis'}
@@ -293,8 +293,8 @@ dss_preds <- dss_preds %>%
 df_preds <- dplyr::left_join(dss_preds, conte_preds) %>%
   dplyr::rename(conte_pred = current)
 
-g <- ggplot(df_preds, aes(conte_pred, dss_pred)) + geom_point(alpha = 0.5, colour = "gray50") + geom_abline(intercept = 0, slope = 1, colour = "red") + theme_bw()
-g + geom_density2d()
+g <- ggplot(df_preds, aes(conte_pred, dss_pred)) + geom_point(alpha = 0.2, colour = "gray10", size = 0.7) + geom_abline(intercept = 0, slope = 1, colour = "red") + theme_bw() + xlab("Predictions") + ylab("DSS Predictions")
+g + geom_density2d(size = 0.4)
 
 #g + stat_density2d(aes(fill = ..level..), geom = "polygon")
 
