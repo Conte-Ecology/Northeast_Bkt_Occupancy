@@ -24,27 +24,31 @@ We used a logistic mixed effects model to include the effects of landscape, land
 
 |  state  |  data_source  |  n_reaches  |  min_yr  |  max_yr  |  range_yrs  |
 |:-------:|:-------------:|:-----------:|:--------:|:--------:|:-----------:|
-|   CT    |    CTDEEP     |    1259     |   1991   |   2010   |     19      |
+|   CT    |    CTDEEP     |    1267     |   1991   |   2010   |     19      |
+|   CT    |     NYDEC     |      2      |   1991   |   2010   |     19      |
 |   MA    |    CTDEEP     |      9      |   1991   |   2010   |     19      |
 |   MA    |     MADFW     |     321     |   1991   |   2010   |     19      |
 |   MA    |     NYDEC     |      4      |   2008   |   2010   |      2      |
+|   MD    |     Hitt      |      2      |   1991   |   2010   |     19      |
+|   MD    |     PFBC      |      1      |   1991   |   2010   |     19      |
 |   ME    |     MEIFW     |    1881     |   1991   |   2010   |     19      |
 |   NH    |    CTDEEP     |      1      |   1991   |   2010   |     19      |
 |   NH    |     MADFW     |      4      |   1991   |   2010   |     19      |
 |   NH    |     MEIFW     |      6      |   1995   |   2010   |     15      |
 |   NH    |     VTFWD     |      1      |   1991   |   2010   |     19      |
+|   NJ    |     NYDEC     |      2      |   1992   |   1994   |      2      |
 |   NY    |    CTDEEP     |      3      |   1991   |   2010   |     19      |
 |   NY    |     MADFW     |      2      |   2008   |   2010   |      2      |
-|   NY    |     NYDEC     |    1115     |   1991   |   2010   |     19      |
+|   NY    |     NYDEC     |    4350     |   1991   |   2010   |     19      |
+|   PA    |     Hitt      |      5      |   1999   |   2005   |      6      |
+|   PA    |     NYDEC     |      6      |   1991   |   2010   |     19      |
+|   PA    |     PFBC      |     857     |   1991   |   2010   |     19      |
 |   RI    |    CTDEEP     |      2      |   1991   |   2010   |     19      |
 |   VT    |     MADFW     |      1      |   2004   |   2004   |      0      |
-|   VT    |     VTFWD     |     193     |   1991   |   2010   |     19      |
-|   NA    |    CTDEEP     |      8      |   1991   |   2010   |     19      |
-|   NA    |     Hitt      |      7      |   1991   |   2010   |     19      |
+|   VT    |     NYDEC     |      1      |   1995   |   1995   |      0      |
+|   VT    |     VTFWD     |     319     |   1991   |   2010   |     19      |
 |   NA    |     MEIFW     |      6      |   2007   |   2007   |      0      |
-|   NA    |     NYDEC     |    3246     |   1991   |   2010   |     19      |
-|   NA    |     PFBC      |     858     |   1991   |   2010   |     19      |
-|   NA    |     VTFWD     |     128     |   1991   |   2010   |     19      |
+|   NA    |     VTFWD     |      2      |   2006   |   2009   |      3      |
 
 ## Predictor Variables
 
