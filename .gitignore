@@ -1,8 +1,8 @@
 Modeling_Discussion.md
 .RData
-*.RData
-Data/
-Output/
+# *.RData
+# Data/
+# Output/
 *.csv
 *.xls*
 *.pdf
