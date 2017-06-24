@@ -81,7 +81,7 @@ df_summary <- df_pa %>%
 
 ## Abstract
 
-The USGS Conte Laboratory developed an occupancy model for Brook Trout based on presence/absence data from agencies (see below) and landscape data housed in [SHEDS: http://ecosheds.org/](http://ecosheds.org/). The aim of the model was to provide predictions of occupancy (probability of presence) for catchments smaller than 200 `r km^2` in the northeastern US from Virginia to Maine. We provide predictions under current environmental conditions and for future increases in stream temperature.
+The USGS Conte Laboratory developed an occupancy model for Brook Trout based on presence/absence data from agencies (see below) and landscape data housed in [SHEDS: http://ecosheds.org/](http://ecosheds.org/). The aim of the model was to provide predictions of occupancy (probability of presence) for catchments smaller than 200 $km^2$ in the northeastern US from Virginia to Maine. We provide predictions under current environmental conditions and for future increases in stream temperature.
 
 ## Objectives
 
