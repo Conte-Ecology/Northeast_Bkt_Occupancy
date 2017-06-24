@@ -18,3 +18,5 @@ maps/
 .Rprofile
 derived_site_metrics.csv
 all_output.RData
+Output/all_output.RData
+
