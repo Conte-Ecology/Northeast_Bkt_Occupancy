@@ -67,7 +67,7 @@ df_states <- dplyr::collect(tbl_states, n = Inf) %>%
 # combine data and summarize
 df_summary <- df_pa %>%
   dplyr::left_join(df_states) %>%
-  dplyr::group_by(state, data_source) %>%
+  dplyr::group_by(state) %>% #, data_source) %>%
   dplyr::summarise(#n = n(),
                    n_reaches = length(unique(featureid)),
                    #n_occ = sum(Occupancy),
@@ -75,7 +75,8 @@ df_summary <- df_pa %>%
                    max_yr = max(year_max)) %>%
   dplyr::mutate(min_yr = ifelse(is.na(min_yr), as.integer(1991), min_yr),
                 max_yr = ifelse(is.na(max_yr), as.integer(2010), max_yr),
-                range_yrs = max_yr - min_yr)
+                range_yrs = max_yr - min_yr + 1) %>%
+  dplyr::filter(!is.na(state))
 
 ```
 
@@ -103,11 +104,30 @@ We used a logistic mixed effects model to include the effects of landscape, land
 
 #dbDisconnect(db$con)
 
-pandoc.table(df_summary,
-             style = "rmarkdown",
-             split.tables = Inf)
+# pandoc.table(df_summary,
+#              style = "rmarkdown",
+#              split.tables = Inf)
+# 
+
+
 
 ```
+
+| State | Number of locations | Number of catchments |	Min year |	Max year |
+|:-------:|:-----------:|:--------:|:--------:|:--------:|
+| CT	| 1535 |	1268 |	1991 |	2010 |
+| MA |	630 |	608 |	1991 |	2010 |
+| MD | 225 | 224 | 1991 | 2010 |
+| ME | 2167 | 1875 | 1991 | 2010 |
+| NH | 12 | 12 | 1991 | 2010 |
+| NJ | 9 | 9 | 1991 | 2010 |
+| NY | 6461 | 4355 | 1991 | 2010 |
+| PA | 3850 | 3804 | 1991 | 2010 |
+| RI | 4 | 3 | 1991 | 2010 |
+| VA | 422 | 422 | 1991 | 2010 |
+| VT | 457 | 320 | 1991 | 2010 |
+| WV | 233 | 233 | 1991 | 2010 |
+
 
 ## Predictor Variables
 
