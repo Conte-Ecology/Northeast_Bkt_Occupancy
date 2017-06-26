@@ -120,7 +120,7 @@ We used a logistic mixed effects model to include the effects of landscape, land
 | MD | 225 | 224 | 1991 | 2010 |
 | ME | 2167 | 1875 | 1991 | 2010 |
 | NH | 12 | 12 | 1991 | 2010 |
-| NJ | 9 | 9 | 1991 | 2010 |
+| NJ | 9 | 9 | 1992 | 1994 |
 | NY | 6461 | 4355 | 1991 | 2010 |
 | PA | 3850 | 3804 | 1991 | 2010 |
 | RI | 4 | 3 | 1991 | 2010 |
