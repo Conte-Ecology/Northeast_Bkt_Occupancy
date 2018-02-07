@@ -1,0 +1,141 @@
+---
+title: "model_predictions"
+author: "Daniel Hocking"
+date: "April 20, 2015"
+output: html_document
+---
+
+## Current prediction for all catchments
+```{r process and standardize all catchment data}
+all.data2 <- data[ , c("PresenceAbsence", "TotDASqKM", "ReachElevationM", "ReachSlopeDEG", "Forest", "Agriculture", "CONUSWetland", "CONUSOpenWater", "Developed", "AnnualTmaxC", "AnnualTminC", "WinterPrcpMM", "SummerPrcpMM", "AnnualPrcpMM", "SurficialCoarseC", "HydrologicGroupAB", "StreamOrder", "pred_flow", "SummerMaxT", "RiseSlope", "FallSlope", "TNC_DamCount","Latitude", "Longitude", "HUC_8", "HUC_12", "FEATUREID")] 
+
+names(all.data2) <- c("pres", "area", "elev", "slope", "forest", "ag", "wetland", "water", "develop", "tmax", "tmin", "precip.winter", "precip.summer", "precip", "surfC", "hydroAB", "stream.order", "flow", "tmax.stream", "rise.slope", "fall.slope", "dams", "lat", "lon", "HUC_8", "HUC_12", "FEATUREID")
+
+all.data2$HUC_10 <- substr(all.data2$HUC_12, 1, 10)
+all.data2 <- subset(all.data2, !is.na(HUC_10))
+
+all.data2$state <- latlong2state(all.data2[ , c("lon", "lat")])
+
+all.data3 <- all.data2[all.data2$area <= 50, ]
+all.data3 <- all.data3[which(all.data3$rise.slope > 0), ]
+all.data3 <- all.data3[which(all.data3$fall.slope > 0), ]
+
+all.data.fit <- all.data3[ , c("FEATUREID","area","precip", "precip.summer", "tmax.stream", "rise.slope", "fall.slope", "tmax", "tmin", "surfC", "forest", "ag", "slope","pres", "hydroAB", "wetland", "water", "elev", "develop", "dams", "flow", "state", "HUC_8","HUC_10")] # ,"state","stateID"
+
+all.data.fit2 <- subset(all.data.fit, is.na(slope) == FALSE)
+all.data.fit2 <- subset(all.data.fit2, is.na(elev) == FALSE)
+all.data.fit2 <- subset(all.data.fit2, is.na(tmax.stream) == FALSE)
+
+summary(all.data.fit2) # no NA remaining
+
+AllHuc10 <- subset(all.data.fit2, !duplicated(HUC_10, fromLast=FALSE))
+AllHuc10$HUC_10n <- as.numeric(AllHuc10$HUC_10) # just to order below. to be deleted
+AllHuc10 <- AllHuc10[ order(AllHuc10$HUC_10n), ]
+AllHuc10 <- data.frame(cbind(AllHuc10$HUC_10, c(1:nrow(AllHuc10))))
+names(AllHuc10) <- c("HUC_10","fhuc10")
+str(AllHuc10)
+AllHuc10$HUC_10 <- as.character(AllHuc10$HUC_10)
+
+## add HUC10 ID to fit df
+all.data.fit2 <- merge(x=all.data.fit2, y=AllHuc10, by="HUC_10")
+
+all.data.fit2$huc10 <- as.numeric(all.data.fit2$fhuc10)
+bar <- NA
+for(i in 1:max(all.data.fit2$huc10)) {
+  foo <- subset(all.data.fit2, subset = huc10 == i)
+  bar[i] <- sum(foo$area * foo$tmax) / sum(foo$area)
+}
+
+df.huc <- data.frame(1:max(all.data.fit2$huc10), bar)
+names(df.huc) <- c("huc10", "tmax.huc")
+
+all.data.fit2 <- merge(all.data.fit2, df.huc, by = "huc10")
+
+all.data.fit2 <- all.data.fit2[c("pres", "tmax.huc", "area", "precip", "tmax.stream", "rise.slope", "fall.slope", "tmax", "tmin", "forest", "slope", "surfC", "ag", "precip.summer", "elev", "hydroAB", "develop", "flow", "wetland", "water", "FEATUREID", "state", "fhuc10", "HUC_8", "HUC_10", "dams")]
+
+# Find means and sd used in standardizing the data used for model fitting
+Means <- apply(data.fit2[ , 2:20], MARGIN=2, FUN = mean, na.rm=T)
+SDs <- apply(data.fit2[ , 2:20], MARGIN=2, FUN = sd, na.rm=T)
+
+# Standardize the continuous covariates for all catchments
+all.temp <- data.frame(matrix(NA, dim(all.data.fit2)[1], length(Means)))
+for(i in 1:length(Means)){
+  all.temp[ , i] <- (all.data.fit2[ ,i+1] - Means[i]) / SDs[i]
+}
+names(all.temp) <- names(Means)
+
+# recombine with other covariates in the same order as the fitted data
+all.data.fit.std <- cbind(all.data.fit2[ , c(1, 21:26)], all.temp)
+
+str(all.data.fit.std)
+summary(all.data.fit.std) # appears to be some outliers. Find and remove.
+
+hist(all.data.fit.std$surfC, breaks=50) # not super clear outliers but could exclude those over 4 or 5
+hist(all.data.fit.std$wetland); boxplot(all.data.fit.std$wetland) # could cut off at 6
+
+all.data.fit.std <- all.data.fit.std[all.data.fit.std$wetland <= 6, ]
+df.fit.all <- all.data.fit.std[all.data.fit.std$surfC <= 6, ]
+
+
+```
+
+
+```{r}
+
+# made standardized dataframe of all catchments we want to project to
+
+pred.fit.climate.all <- inv.logit(predict(glmm.M51, df.fit.all, allow.new.levels = TRUE))
+pred.fit.stream.all <- inv.logit(predict(glmm.M35, df.fit.all, allow.new.levels = TRUE))
+
+deltas <- pred.fit.climate.all - pred.fit.stream.all
+
+summary(deltas)
+sd(deltas)
+quantile(deltas, probs = c(0.025, 0.5, 0.975))
+
+fits <- data.frame(FEATUREID = df.fit.all$FEATUREID, pres = df.fit.all$pres, deltas = deltas, psi.clim = pred.fit.climate.all, psi.stream = pred.fit.stream.all)
+
+fits <- merge(fits, LocalStats[ , c("FEATUREID", "Latitude", "Longitude")], by = "FEATUREID")
+names(fits) <- c("FEATUREID", "pres", "deltas", "psi.clim", "psi.stream", "lat", "lon")
+
+fits <- merge(fits, df.fit.all, by = "FEATUREID") 
+fits <- merge(fits, data.fit2.all, by = "FEATUREID") 
+
+save(fits, file = "Predictions.RData")
+
+summary(fits)
+dim(fits)
+
+ggplot(data = fits, aes(psi.clim, psi.stream)) + geom_point()
+
+par(mar = c(3.5,3,2,1), mgp = c(2,.7,0), tck = -.02)
+plot(fits$psi.clim, fits$psi.stream, xlab = "Climate Predicted Occupancy",
+     ylab = "Stream Temperature/Flow Predicted Occupancy")
+abline(0, 1, col = "red")
+
+par(mfrow = c(1, 3))
+plot(fits$forest, fits$psi.clim)
+lines(smooth.spline(fits$forest, fits$psi.clim), col = "red")
+plot(fits$asin.forest, fits$psi.clim)
+lines(seq(-3, 2, by = 0.1), inv.logit(fixef(glmm.simple)[1] + fixef(glmm.simple)["asin.forest"]*(seq(-3, 2, by = 0.1))), col = "red")
+plot(fits$asin.forest, fits$psi.stream)
+lines(seq(-3, 2, by = 0.1), inv.logit(fixef(glmm.streamT.flow2)[1] + fixef(glmm.streamT.flow2)["asin.forest"]*(seq(-3, 2, by = 0.1))), col = "red")
+par(mfrow = c(1,1))
+
+fixed <- data.frame(c(m1[1:3], NA, m1[4], NA, m1[5]), c(m2[1], NA, NA, m2[2], m2[3:5]))
+names(fixed) <- c("Climate", "Stream")
+row.names(fixed) <- c("Intercept", "log.area", "precip", "log.flow", "tmax", "rise.slope", "asin.forest")
+fixed
+
+
+library(ggmap)
+map.center <- geocode("Worcester, MA")
+baseMap <- qmap(c(lon=map.center$lon, lat=map.center$lat), source="google", zoom=7)
+baseMap + geom_point(aes(x=lon, y=lat, 
+                                size=(abs(deltas)),
+                                color=factor(pres)), 
+                            data=fits[which(abs(fits$deltas) <= 0.3), ]) +
+  scale_color_manual(values=c('darkred','darkgreen')) 
+  #ggtitle( as.character(y)))
+
+```
