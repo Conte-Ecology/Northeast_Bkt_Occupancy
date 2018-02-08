@@ -407,8 +407,14 @@ ggsave("Output/July_Temp_Effect.png")
 # load profile locally to play with packrat
 source("~/.Rprofile")
 
+# install.packages("RPostgreSQL")
+# install.packages("dbplyr")
+
 # connect to database source
 db <- src_postgres(dbname='sheds_new', host='osensei.cns.umass.edu', port='5432', user=options('SHEDS_USERNAME'), password=options('SHEDS_PASSWORD'))
+
+# library(RPostgreSQL)
+# dbListTables(db$con)
 
 # fetch covariates
 # featureid |  variable  | value | zone  | riparian_distance_ft 
@@ -477,14 +483,14 @@ covariateData <- covariateData %>%
                   dec_prcp_mm)
 
 # add huc info
-tbl_huc12 <- tbl(db, 'catchment_huc12') %>%
+tbl_huc12 <- tbl(db, 'catchment_huc12')
+
+featureid_huc8 <- tbl_huc12 %>%
+  dplyr::collect() %>%
  # dplyr::filter(featureid %in% featureids) %>%
   dplyr::mutate(huc4=substr(huc12, as.integer(1), as.integer(4)),
                 huc8=substr(huc12, as.integer(1), as.integer(8)),
                 huc10=substr(huc12, as.integer(1), as.integer(10)))
-
-featureid_huc8 <- tbl_huc12 %>%
-  dplyr::collect()
 
 df_covariates <- dplyr::left_join(covariateData, featureid_huc8)
 
@@ -509,7 +515,10 @@ df_covariates <- df_covariates %>%
 # link huc factors with actual hucs
 df_hucs <- df.fit %>%
   dplyr::select(huc10, fhuc10) %>%
-  dplyr::distinct()
+  dplyr::distinct() #%>%
+  #dplyr::mutate(fhuc10 = as.numeric(fhuc10))
+
+length(unique(df.fit$huc10) %in% unique(df_covariates$huc10))
 
 df <- df_covariates %>%
   dplyr::left_join(df_hucs)
@@ -765,22 +774,33 @@ library(scales)
 
 ne_coords <- c(-80.73, 39.95, -66, 47.5)
 
-ne_map <- get_map(ne_coords, source = "stamen", maptype = c("terrain"), crop = T)
+ne_map <- get_map(ne_coords, source = "google", maptype = c("terrain"), crop = TRUE)
 
-ggmap(ne_map) + 
+foo <- df_sheds %>%
+  left_join(dplyr::select(df_metrics, featureid, latitude, longitude))
+
+g <- ggmap(ne_map) + 
   geom_point(aes(longitude, latitude, color = current), size = 0.5, 
-             data = df) + 
+             data = foo) + 
   scale_colour_gradientn("Occupancy\nProbability", na.value = "grey20", 
           colours = c("#660000", "#f9f3c2"))
+g
+ggsave(g, file = "Output/occupancy_map.png")
 
-ggmap(ne_map) + 
+df_predictions <- df_predictions %>%
+  left_join(dplyr::select(df_metrics, featureid, latitude, longitude))
+
+g <- ggmap(ne_map) + 
   geom_point(aes(longitude, latitude, color = min_forest_0.5), size = 0.5, 
              data = df_predictions) + 
   scale_colour_gradientn("Forest Change\nfor 50% Occupancy", na.value = "grey20", 
           colours = c("#f9f3c2", "#660000"))
-
+g
+ggsave(g, file = "Output/occupancy_dForest_50pct_map.png")
 ```
 
+
+# ---------------end working code--------------
 
 
 ## temporal trend in occupancy probability among catchments
